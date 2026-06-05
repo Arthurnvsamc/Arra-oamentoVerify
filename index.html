@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Arraçoamento</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#111;
+    color:white;
+    padding:20px;
+    margin:0;
+}
+
+.card{
+    background:#1e1e1e;
+    border-radius:16px;
+    padding:20px;
+    max-width:500px;
+    margin:auto;
+}
+
+h1{
+    margin-top:0;
+    font-size:24px;
+}
+
+.dia{
+    margin-top:15px;
+    padding:12px;
+    border-radius:12px;
+    background:#2b2b2b;
+}
+
+.titulo{
+    font-weight:bold;
+    color:#4CAF50;
+    margin-bottom:5px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+    <h1>🍽 Arraçoamento</h1>
+
+    <div id="conteudo">
+        Carregando...
+    </div>
+</div>
+
+<script>
+
+const EMAIL = "arthurnvs2002@gmail.com";
+
+const API =
+"https://sheets.googleapis.com/v4/spreadsheets/1PYjqUUIlQfsPuQTO8TTPj9MbUNprKsp71bUbLvyVx9o/values/CheckArra%C3%A7oamentoPrata?key=AIzaSyCf23te5v6gvL4WDShqCpMWB6r3ySE-i9s";
+
+async function carregar(){
+
+    try{
+
+        const resposta = await fetch(API);
+        const dados = await resposta.json();
+
+        const linhas = dados.values;
+
+        const usuario = linhas
+            .filter(l => l[1] === EMAIL)
+            .sort((a,b) =>
+                new Date(
+                    b[0].split(" ")[0].split("/").reverse().join("-")
+                ) -
+                new Date(
+                    a[0].split(" ")[0].split("/").reverse().join("-")
+                )
+            )[0];
+
+        if(!usuario){
+            document.getElementById("conteudo").innerHTML =
+                "Usuário não encontrado";
+            return;
+        }
+
+        const hoje = {
+            data: usuario[10],
+            refeicoes: usuario[3]
+        };
+
+        const amanha = {
+            data: usuario[11],
+            refeicoes: usuario[4]
+        };
+
+        document.getElementById("conteudo").innerHTML = `
+            <div class="dia">
+                <div class="titulo">HOJE (${hoje.data})</div>
+                ${hoje.refeicoes}
+            </div>
+
+            <div class="dia">
+                <div class="titulo">AMANHÃ (${amanha.data})</div>
+                ${amanha.refeicoes}
+            </div>
+        `;
+
+    }catch(e){
+
+        document.getElementById("conteudo").innerHTML =
+            "Erro ao carregar dados";
+
+        console.error(e);
+    }
+}
+
+carregar();
+
+</script>
+
+</body>
+</html>
