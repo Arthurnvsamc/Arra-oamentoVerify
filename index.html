@@ -86,15 +86,42 @@ async function carregar(){
             return;
         }
 
-        const hoje = {
-            data: usuario[10],
-            refeicoes: usuario[3]
-        };
+const datas = usuario.slice(10, 17);
+const refeicoes = usuario.slice(3, 10);
 
-        const amanha = {
-            data: usuario[11],
-            refeicoes: usuario[4]
-        };
+const hojeReal = new Date();
+
+hojeReal.setHours(0,0,0,0);
+
+let indiceHoje = 0;
+
+for(let i = 0; i < datas.length; i++){
+
+    const [dia, mes, ano] = datas[i].split("/");
+
+    const dataPlanilha = new Date(
+        Number(ano),
+        Number(mes) - 1,
+        Number(dia)
+    );
+
+    dataPlanilha.setHours(0,0,0,0);
+
+    if(dataPlanilha >= hojeReal){
+        indiceHoje = i;
+        break;
+    }
+}
+
+const hoje = {
+    data: datas[indiceHoje],
+    refeicoes: refeicoes[indiceHoje]
+};
+
+const amanha = {
+    data: datas[indiceHoje + 1],
+    refeicoes: refeicoes[indiceHoje + 1]
+};
 
         document.getElementById("conteudo").innerHTML = `
             <div class="dia">
